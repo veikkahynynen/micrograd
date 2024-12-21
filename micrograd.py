@@ -9,7 +9,10 @@ def f(x):
 
 
 def main():
-    print(f(5.0))
+    xs = np.arange(-5, 5, 0.1)
+    ys = f(xs)
+    plt.plot(xs, ys)
+    plt.show()
 
 
 
