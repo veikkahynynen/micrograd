@@ -8,8 +8,10 @@ def f(x):
 
 
 def main():
-    x = 2.5
-    f(x)
+    x = 3.0
+    print(f(x))
+    h = 0.001
+    print((f(x + h) - f(x)) / h)
 
 
 if __name__ == "__main__":
