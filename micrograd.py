@@ -4,16 +4,12 @@ import matplotlib.pyplot as plt
 
 
 def f(x):
-    return 3*x**2 - 4*x + 5
-
+    return 3*x**2 - 4*x + 9
 
 
 def main():
-    xs = np.arange(-5, 5, 0.1)
-    ys = f(xs)
-    plt.plot(xs, ys)
-    plt.show()
-
+    x = 2.5
+    f(x)
 
 
 if __name__ == "__main__":
