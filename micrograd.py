@@ -82,6 +82,12 @@ def main():
     d = e + c; d.label='d'
     f = Value(-2.0, label='f')
     L = d*f; L.label='L'
+
+    L.grad = 1.0
+    f.grad = 4.0
+    d.grad = -2.0
+    
+
     dot = draw_dot(L)
     dot.render('graph', format='png', cleanup=True)
 
