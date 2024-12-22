@@ -26,7 +26,7 @@ def draw_dot(root, format='svg', rankdir='LR'):
     dot = Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
     
     for n in nodes:
-        dot.node(name=str(id(n)), label = "{ data %.4f }" % (n.data,), shape='record')
+        dot.node(name=str(id(n)), label = "{ %s | data %.4f | grad %.4f }" % (n.label, n.data, n.grad), shape='record')
         if n._op:
             dot.node(name=str(id(n)) + n._op, label=n._op)
             dot.edge(str(id(n)) + n._op, str(id(n)))
@@ -40,10 +40,13 @@ def draw_dot(root, format='svg', rankdir='LR'):
 
 class Value:
 
-    def __init__(self, data, _children=(), _op=''):
+    def __init__(self, data, _children=(), _op='', label=''):
         self.data = data
+        self.grad = 0.0
         self._prev = set(_children)
         self._op = _op
+        self.label = label
+
 
     def __repr__(self):
         return f"Value(data={self.data})"
@@ -72,8 +75,14 @@ def f(x):
 
 
 def main():
-    a = Value(3.0)
-    dot = draw_dot(a)
+    a = Value(2.0, label='a')
+    b = Value(-3.0, label='b')
+    c = Value(10.0, label='c')
+    e = a*b; e.label='e'
+    d = e + c; d.label='d'
+    f = Value(-2.0, label='f')
+    L = d*f; L.label='L'
+    dot = draw_dot(L)
     dot.render('graph', format='png', cleanup=True)
 
 
