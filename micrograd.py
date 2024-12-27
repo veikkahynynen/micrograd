@@ -59,42 +59,35 @@ class Value:
         out = Value(self.data * other.data, (self, other), '*')
         return out
 
-    def ____(self, other):
-        out = Value(self.data - other.data, (self, other))
+    def tanh(self):
+        x = self.data
+        t = (math.exp(2*x) - 1)/(math.exp(2*x) + 1)
+        out = Value(t, (self, ), 'tanh')
         return out
 
-    def ____(self, other):
-        out = Value(self.data / other.data, (self, other))
-        return out
 
 
 def main():
-    a = Value(2.0, label='a')
-    b = Value(-3.0, label='b')
-    c = Value(10.0, label='c')
-    f = Value(-2.0, label='f')
 
-    f.grad = 4.0
-    c.grad = -2.0
-    a.grad = 6.0
-    b.grad = -4.0
+    # inputs x1, x2
+    x1 = Value(2.0, label='x1')
+    x2 = Value(0.0, label='x2')
 
-    a.data += 0.01 * a.grad
-    b.data += 0.01 * b.grad
-    c.data += 0.01 * c.grad
-    f.data += 0.01 * f.grad
+    # weights w1, w2
+    w1 = Value(-3.0, label='w1')
+    w2 = Value(1.0, label='w2')
 
+    # bias of the neuron
+    b = Value(6.7, label='b')
 
-    e = a*b; e.label='e'
-    d = e + c; d.label='d'
-    L = d*f; L.label='L'
-    d.grad = -2.0
-    e.grad = -2.0
-    L.grad = 1.0
+    # h1*w1 + x2*w2 + b
+    x1w1 = x1*w1; x1w1.label = 'x1*w1'
+    x2w2 = x2*w2; x2w2.label = 'x2*w2'
+    x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1 + x2w2'
+    n = x1w1x2w2 + b; n.label = 'n'
+    o = n.tanh()
 
-    print(L.data)    
-
-    dot = draw_dot(L)
+    dot = draw_dot(o)
     dot.render('graph', format='png', cleanup=True)
 
 
