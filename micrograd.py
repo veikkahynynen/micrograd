@@ -78,19 +78,27 @@ def main():
     a = Value(2.0, label='a')
     b = Value(-3.0, label='b')
     c = Value(10.0, label='c')
-    e = a*b; e.label='e'
-    d = e + c; d.label='d'
     f = Value(-2.0, label='f')
-    L = d*f; L.label='L'
 
-    L.grad = 1.0
     f.grad = 4.0
-    d.grad = -2.0
-    e.grad = -2.0
     c.grad = -2.0
     a.grad = 6.0
     b.grad = -4.0
-    
+
+    a.data += 0.01 * a.grad
+    b.data += 0.01 * b.grad
+    c.data += 0.01 * c.grad
+    f.data += 0.01 * f.grad
+
+
+    e = a*b; e.label='e'
+    d = e + c; d.label='d'
+    L = d*f; L.label='L'
+    d.grad = -2.0
+    e.grad = -2.0
+    L.grad = 1.0
+
+    print(L.data)    
 
     dot = draw_dot(L)
     dot.render('graph', format='png', cleanup=True)
