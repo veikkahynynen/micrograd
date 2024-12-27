@@ -88,6 +88,8 @@ def main():
     d.grad = -2.0
     e.grad = -2.0
     c.grad = -2.0
+    a.grad = 6.0
+    b.grad = -4.0
     
 
     dot = draw_dot(L)
