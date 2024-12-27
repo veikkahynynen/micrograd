@@ -68,12 +68,6 @@ class Value:
         return out
 
 
-
-def f(x):
-    return 3*x**2 - 4*x + 9
-
-
-
 def main():
     a = Value(2.0, label='a')
     b = Value(-3.0, label='b')
