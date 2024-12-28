@@ -64,6 +64,7 @@ class Value:
         return out
 
     def __mul__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
         out = Value(self.data * other.data, (self, other), '*')
 
         def _backward():
@@ -72,6 +73,10 @@ class Value:
         out._backward = _backward
 
         return out
+    
+    def __rmul__(self, other):
+        return self * other
+
 
     def tanh(self):
         x = self.data
@@ -105,6 +110,9 @@ class Value:
 
 
 def main():
+
+    a = Value(2.0)
+    print(2 * a)
 
     # inputs x1, x2
     x1 = Value(2.0, label='x1')
