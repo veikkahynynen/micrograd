@@ -78,6 +78,20 @@ class Value:
         return self * other
     
 
+    def __truediv__(self, other):
+        return self * other**(-1)
+    
+
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only int/float powers"
+        out = Value(self.data**other, (self, ), f'**{other}')
+
+        def _backward():
+            self.grad += other * self.data**(other - 1) * out.grad
+        out._backward = _backward
+
+        return out
+
 
     def exp(self):
         x = self.data
@@ -122,9 +136,6 @@ class Value:
 
 
 def main():
-
-    a = Value(2.0)
-    print(a.exp())
 
     # inputs x1, x2
     x1 = Value(2.0, label='x1')
