@@ -83,6 +83,23 @@ class Value:
         out._backward = _backward
 
         return out
+    
+
+    def backward(self):
+        topo = []
+        visited = set()
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+                for child in v._prev:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(self)
+        
+        self.grad = 1.0
+        for node in reversed(topo):
+            node._backward()
+
 
 
 
@@ -105,8 +122,9 @@ def main():
     x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1 + x2w2'
     n = x1w1x2w2 + b; n.label = 'n'
     o = n.tanh(); o.label = 'o'
-    o.grad = 1.0
 
+    o.backward()
+    
     dot = draw_dot(o)
     dot.render('graph', format='png', cleanup=True)
 
