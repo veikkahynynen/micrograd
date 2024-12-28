@@ -76,7 +76,19 @@ class Value:
     
     def __rmul__(self, other):
         return self * other
+    
 
+
+    def exp(self):
+        x = self.data
+        out = Value(math.exp(x), (self, ), 'exp')
+
+        def _backward():
+            self.grad += out.data * out.grad
+
+        out._backward = _backward
+        
+        return out
 
     def tanh(self):
         x = self.data
@@ -112,7 +124,7 @@ class Value:
 def main():
 
     a = Value(2.0)
-    print(2 * a)
+    print(a.exp())
 
     # inputs x1, x2
     x1 = Value(2.0, label='x1')
