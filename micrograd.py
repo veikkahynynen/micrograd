@@ -90,6 +90,12 @@ def main():
     n.grad = 0.5
     x1w1x2w2.grad = 0.5
     b.grad = 0.5
+    x1w1.grad = 0.5
+    x2w2.grad = 0.5
+    x2.grad = w2.data * x2w2.grad
+    w2.grad = x2.data * x2w2.grad
+    x1.grad = w1.data * x1w1.grad
+    w1.grad = x1.data * x1w1.grad
 
     dot = draw_dot(o)
     dot.render('graph', format='png', cleanup=True)
