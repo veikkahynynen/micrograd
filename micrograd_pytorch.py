@@ -110,6 +110,12 @@ class Neuron:
         self.w = [Value(random.uniform(-1, 1)) for _ in range(nin)]
         self.b = Value(random.uniform(-1, 1))
 
+    def __call__(self, x):
+        # w * x + b
+        act = sum((w1 * x1 for w1, x1 in zip(self.w, x)), self.b)
+        out = act.tanh()
+        return out
+
 
 def main():
     x1 = torch.Tensor([2.0]).double()               ; x1.requires_grad = True
@@ -119,15 +125,11 @@ def main():
     b = torch.Tensor([6.8813735870195432]).double() ; b.requires_grad = True
     n = x1 * w1 + x2 * w2 + b
     o = torch.tanh(n)
-
-    print(o.data.item())
     o.backward()
 
-    print('------')
-    print('x2', x2.grad.item())
-    print('w2', w2.grad.item())
-    print('x1', x1.grad.item())
-    print('w1', w1.grad.item())
+    x = [2.0, 3.0]
+    n = Neuron(2)
+    n(x)
 
 
 if __name__ == "__main__":
