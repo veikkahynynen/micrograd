@@ -117,6 +117,18 @@ class Neuron:
         return out
 
 
+class Layer:
+
+    def __init__(self, nin, nout):
+        self.neurons = [Neuron(nin) for _ in range(nout)]
+
+    def __call__(self, x):
+        outs = [n(x) for n in self.neurons]
+        return outs
+
+
+
+
 def main():
     x1 = torch.Tensor([2.0]).double()               ; x1.requires_grad = True
     x2 = torch.Tensor([0.0]).double()               ; x2.requires_grad = True
@@ -128,8 +140,8 @@ def main():
     o.backward()
 
     x = [2.0, 3.0]
-    n = Neuron(2)
-    n(x)
+    n = Layer(2, 3)
+    print(n(x))
 
 
 if __name__ == "__main__":
