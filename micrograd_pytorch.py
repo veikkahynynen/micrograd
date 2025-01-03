@@ -174,12 +174,19 @@ class MLP:
 
 
 def main():
-    x = [2.0, 3.0, -1]
+    
     n = MLP(3, [4, 4, 1])
-    print(n(x))
-
-    dot = draw_dot(n(x))
-    dot.render('graph', format='png', cleanup=True)
+    
+    xs = [
+        [2.0, 3.0, -1.0],
+        [3.0, -1.0, 0.5],
+        [0.5, 1.0, 1.0],
+        [1.0, 1.0, -1.0]
+    ]
+    ys = [1.0, -1.0, -1.0, 1.0]
+    
+    ypred = [n(x) for x in xs]
+    print([(yout - ygt)**2 for ygt, yout in zip(ys, ypred)])
 
 
 if __name__ == "__main__":
