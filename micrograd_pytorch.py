@@ -183,10 +183,12 @@ def main():
         [0.5, 1.0, 1.0],
         [1.0, 1.0, -1.0]
     ]
-    ys = [1.0, -1.0, -1.0, 1.0]
+    ys = [Value(x) for x in [1.0, -1.0, -1.0, 1.0]]
     
     ypred = [n(x) for x in xs]
-    print([(yout - ygt)**2 for ygt, yout in zip(ys, ypred)])
+    loss = sum(((yout - ygt)**2 for ygt, yout in zip(ys, ypred)), Value(0.0))
+    loss.backward()
+    print(n.layers[0].neurons[0].w[0].grad)
 
 
 if __name__ == "__main__":
