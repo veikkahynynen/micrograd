@@ -190,6 +190,11 @@ def main():
     loss.backward()
     print(n.layers[0].neurons[0].w[0].grad)
 
+    dot = draw_dot(loss)
+    dot.render('graph', format='png', cleanup=True)
+
+
+
 
 if __name__ == "__main__":
     main()
