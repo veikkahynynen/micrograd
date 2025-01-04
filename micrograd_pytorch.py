@@ -150,6 +150,9 @@ class Neuron:
         act = sum((w1 * x1 for w1, x1 in zip(self.w, x)), self.b)
         out = act.tanh()
         return out
+    
+    def parameters(self):
+        return self.w + [self.b]
 
 
 class Layer:
@@ -192,8 +195,6 @@ def main():
 
     dot = draw_dot(loss)
     dot.render('graph', format='png', cleanup=True)
-
-
 
 
 if __name__ == "__main__":
