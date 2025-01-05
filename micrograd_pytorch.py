@@ -1,4 +1,3 @@
-import torch
 import random
 import math
 import matplotlib.pyplot as plt
@@ -193,18 +192,20 @@ def main():
     ]
     ys = [Value(x) for x in (1.0, -1.0, -1.0, 1.0)]
 
-    for k in range(10000):
+    for k in range(20):
         
         # forward pass
         ypred = [n(x) for x in xs]
         loss = sum(((ygt - ypred)**2 for ygt, ypred in zip(ys, ypred)), Value(0.0))
         
         # backward pass
+        for p in n.parameters():
+            p.grad = 0.0
         loss.backward()
 
         # update
         for p in n.parameters():
-            p.data += -0.0001 * p.grad
+            p.data += -0.05 * p.grad
 
 
 if __name__ == "__main__":
