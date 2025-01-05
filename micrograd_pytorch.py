@@ -185,22 +185,26 @@ class MLP:
 def main():
     
     n = MLP(3, [4, 4, 1])
-    
     xs = [
         [2.0, 3.0, -1.0],
         [3.0, -1.0, 0.5],
         [0.5, 1.0, 1.0],
         [1.0, 1.0, -1.0]
     ]
-    ys = [Value(x) for x in [1.0, -1.0, -1.0, 1.0]]
-    
-    ypred = [n(x) for x in xs]
-    loss = sum(((yout - ygt)**2 for ygt, yout in zip(ys, ypred)), Value(0.0))
-    loss.backward()
-    print(n.layers[0].neurons[0].w[0].grad)
+    ys = [Value(x) for x in (1.0, -1.0, -1.0, 1.0)]
 
-    dot = draw_dot(loss)
-    dot.render('graph', format='png', cleanup=True)
+    for k in range(10000):
+        
+        # forward pass
+        ypred = [n(x) for x in xs]
+        loss = sum(((ygt - ypred)**2 for ygt, ypred in zip(ys, ypred)), Value(0.0))
+        
+        # backward pass
+        loss.backward()
+
+        # update
+        for p in n.parameters():
+            p.data += -0.0001 * p.grad
 
 
 if __name__ == "__main__":
