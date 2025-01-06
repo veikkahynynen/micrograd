@@ -1,41 +1,6 @@
+import random
 import math
-import numpy as np
 import matplotlib.pyplot as plt
-from graphviz import Digraph
-
-
-
-def trace(root):
-    nodes, edges = set(), set()
-    def build(v):
-        if v not in nodes:
-            nodes.add(v)
-            for child in v._prev:
-                edges.add((child, v))
-                build(child)
-    build(root)
-    return nodes, edges
-
-def draw_dot(root, format='svg', rankdir='LR'):
-    """
-    format: png | svg | ...
-    rankdir: TB (top to bottom graph) | LR (left to right)
-    """
-    assert rankdir in ['LR', 'TB']
-    nodes, edges = trace(root)
-    dot = Digraph(format=format, graph_attr={'rankdir': rankdir}) #, node_attr={'rankdir': 'TB'})
-    
-    for n in nodes:
-        dot.node(name=str(id(n)), label = "{ %s | data %.4f | grad %.4f }" % (n.label, n.data, n.grad), shape='record')
-        if n._op:
-            dot.node(name=str(id(n)) + n._op, label=n._op)
-            dot.edge(str(id(n)) + n._op, str(id(n)))
-    
-    for n1, n2 in edges:
-        dot.edge(str(id(n1)), str(id(n2)) + n2._op)
-    
-    return dot
-
 
 
 class Value:
@@ -139,33 +104,74 @@ class Value:
             node._backward()
 
 
+class Neuron:
+
+    def __init__(self, nin):
+        self.w = [Value(random.uniform(-1, 1)) for _ in range(nin)]
+        self.b = Value(random.uniform(-1, 1))
+
+    def __call__(self, x):
+        # w * x + b
+        act = sum((w1 * x1 for w1, x1 in zip(self.w, x)), self.b)
+        out = act.tanh()
+        return out
+    
+    def parameters(self):
+        return self.w + [self.b]
+
+
+class Layer:
+
+    def __init__(self, nin, nout):
+        self.neurons = [Neuron(nin) for _ in range(nout)]
+
+    def __call__(self, x):
+        outs = [n(x) for n in self.neurons]
+        return outs[0] if len(outs) == 1 else outs
+    
+    def parameters(self):
+        return [p for neuron in self.neurons for p in neuron.parameters()]
+
+
+class MLP:
+    def __init__(self, nin, nouts):
+        sz = [nin] + nouts
+        self.layers = [Layer(sz[i], sz[i+1]) for i in range(len(nouts))]
+
+    def __call__(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+    
+    def parameters(self):
+        return [p for layer in self.layers for p in layer.parameters()]
 
 
 def main():
-
-    # inputs x1, x2
-    x1 = Value(2.0, label='x1')
-    x2 = Value(0.0, label='x2')
-    # weights w1, w2
-    w1 = Value(-3.0, label='w1')
-    w2 = Value(1.0, label='w2')
-    # bias of the neuron
-    b = Value(6.8813735870195432, label='b')
-    # h1*w1 + x2*w2 + b
-    x1w1 = x1*w1; x1w1.label = 'x1*w1'
-    x2w2 = x2*w2; x2w2.label = 'x2*w2'
-    x1w1x2w2 = x1w1 + x2w2; x1w1x2w2.label = 'x1w1 + x2w2'
-    n = x1w1x2w2 + b; n.label = 'n'
-    # -----
-    e = (2*n).exp()
-    o = (e - 1) / (e + 1)
-    # -----
-    o.label = 'o'
-    o.backward()
     
-    dot = draw_dot(o)
-    dot.render('graph', format='png', cleanup=True)
+    n = MLP(3, [4, 4, 1])
+    xs = [
+        [2.0, 3.0, -1.0],
+        [3.0, -1.0, 0.5],
+        [0.5, 1.0, 1.0],
+        [1.0, 1.0, -1.0]
+    ]
+    ys = [Value(x) for x in (1.0, -1.0, -1.0, 1.0)]
 
+    for k in range(20):
+        
+        # forward pass
+        ypred = [n(x) for x in xs]
+        loss = sum(((ygt - ypred)**2 for ygt, ypred in zip(ys, ypred)), Value(0.0))
+        
+        # backward pass
+        for p in n.parameters():
+            p.grad = 0.0
+        loss.backward()
+
+        # update
+        for p in n.parameters():
+            p.data += -0.05 * p.grad
 
 
 if __name__ == "__main__":
